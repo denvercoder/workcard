@@ -10,48 +10,48 @@ import UIKit
 class CardSelectionVC: UIViewController {
     
     let cardImageView = UIImageView()
-    let stopButton = CWButton(backgroundColor: .systemRed, title: "Stop!")
-    let resetButton = CWButton(backgroundColor: .systemGreen, title: "Restart")
+    let workoutButton = CWButton(backgroundColor: .systemRed, title: "Next Workout")
+    let startOverButton = CWButton(backgroundColor: .systemGreen, title: "Start Over")
     let rulesButton = CWButton(backgroundColor: .systemBlue, title: "Rules")
     
     var cards: [UIImage] = CardDeck.allValues
-    var timer: Timer!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         configureUI()
-        startTimer()
     }
     
     func configureUI() {
         configureCardImageView()
-        configureStopButton()
-        configureResetButton()
+        configureWorkoutButton()
+        configureStartOverButton()
         configureRulesButton()
     }
     
-    func startTimer() {
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(showRandomCard), userInfo: nil, repeats: true)
+    
+    @objc func resetWorkout() {
+        cards = CardDeck.allValues
+        cardImageView.image = UIImage(named: "JK")
     }
     
-    @objc func stopTimer() {
-        timer.invalidate()
-    }
-    
-    @objc func resetTimer() {
-        stopTimer()
-        startTimer()
-    }
     
     @objc func showRandomCard() {
-        cardImageView.image = cards.randomElement()
+        cards.shuffle()
+        cardImageView.image = cards.last
+        if (cards.count > 0) {
+            cards.removeLast()
+        } else {
+            cardImageView.image = UIImage(named: "DONE")
+        }
+        
     }
+    
     
     func configureCardImageView() {
         view.addSubview(cardImageView)
         cardImageView.translatesAutoresizingMaskIntoConstraints = false
-        cardImageView.image = UIImage(named: "AS")
+        cardImageView.image = UIImage(named: "JK")
         
         NSLayoutConstraint.activate([
             cardImageView.widthAnchor.constraint(equalToConstant: 250),
@@ -61,25 +61,25 @@ class CardSelectionVC: UIViewController {
         ])
     }
     
-    func configureStopButton() {
-        view.addSubview(stopButton)
-        stopButton.addTarget(self, action: #selector(stopTimer), for: .touchUpInside)
+    func configureWorkoutButton() {
+        view.addSubview(workoutButton)
+        workoutButton.addTarget(self, action: #selector(showRandomCard), for: .touchUpInside)
         NSLayoutConstraint.activate([
-            stopButton.widthAnchor.constraint(equalToConstant: 260),
-            stopButton.heightAnchor.constraint(equalToConstant: 50),
-            stopButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stopButton.topAnchor.constraint(equalTo: cardImageView.bottomAnchor, constant: 30)
+            workoutButton.widthAnchor.constraint(equalToConstant: 260),
+            workoutButton.heightAnchor.constraint(equalToConstant: 50),
+            workoutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            workoutButton.topAnchor.constraint(equalTo: cardImageView.bottomAnchor, constant: 30)
         ])
     }
     
-    func configureResetButton() {
-        view.addSubview(resetButton)
-        resetButton.addTarget(self, action: #selector(resetTimer), for: .touchUpInside )
+    func configureStartOverButton() {
+        view.addSubview(startOverButton)
+        startOverButton.addTarget(self, action: #selector(resetWorkout), for: .touchUpInside )
         NSLayoutConstraint.activate([
-            resetButton.widthAnchor.constraint(equalToConstant: 115),
-            resetButton.heightAnchor.constraint(equalToConstant: 50),
-            resetButton.leadingAnchor.constraint(equalTo: stopButton.leadingAnchor),
-            resetButton.topAnchor.constraint(equalTo: stopButton.bottomAnchor, constant: 20)
+            startOverButton.widthAnchor.constraint(equalToConstant: 115),
+            startOverButton.heightAnchor.constraint(equalToConstant: 50),
+            startOverButton.leadingAnchor.constraint(equalTo: workoutButton.leadingAnchor),
+            startOverButton.topAnchor.constraint(equalTo: workoutButton.bottomAnchor, constant: 20)
         ])
     }
     
@@ -89,8 +89,8 @@ class CardSelectionVC: UIViewController {
         NSLayoutConstraint.activate([
             rulesButton.widthAnchor.constraint(equalToConstant: 115),
             rulesButton.heightAnchor.constraint(equalToConstant: 50),
-            rulesButton.trailingAnchor.constraint(equalTo: stopButton.trailingAnchor),
-            rulesButton.topAnchor.constraint(equalTo: stopButton.bottomAnchor, constant: 20)
+            rulesButton.trailingAnchor.constraint(equalTo: workoutButton.trailingAnchor),
+            rulesButton.topAnchor.constraint(equalTo: workoutButton.bottomAnchor, constant: 20)
         ])
     }
     
